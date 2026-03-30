@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Affiliate Tool - Creator Discovery Demo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f1117;color:#e4e4e7;min-height:100vh}
+.header{background:#1a1b23;border-bottom:1px solid rgba(255,255,255,0.06);padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:1.2em;background:linear-gradient(135deg,#00ced1,#ff6b9d);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .badge{background:rgba(16,185,129,0.12);color:#10b981;padding:4px 12px;border-radius:12px;font-size:0.8em}
+.nav{background:#1a1b23;border-bottom:1px solid rgba(255,255,255,0.06);padding:0 24px;display:flex;gap:0}
+.nav-item{padding:12px 20px;color:#6b6b80;cursor:pointer;border-bottom:2px solid transparent;font-size:0.9em;transition:all 0.3s}
+.nav-item:hover{color:#e4e4e7}
+.nav-item.active{color:#00ced1;border-bottom-color:#00ced1}
+.container{max-width:1100px;margin:0 auto;padding:24px}
+.search-bar{background:#1a1b23;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;margin-bottom:24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.search-bar input{background:#12131a;border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 16px;border-radius:8px;flex:1;min-width:200px;font-size:0.9em}
+.search-bar select{background:#12131a;border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 16px;border-radius:8px;font-size:0.9em}
+.btn{padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.9em;transition:all 0.3s}
+.btn-primary{background:linear-gradient(135deg,#00ced1,#0891b2);color:#fff}
+.btn-primary:hover{opacity:0.9}
+.btn-pink{background:linear-gradient(135deg,#ff6b9d,#e11d48);color:#fff}
+.results-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.results-header h2{font-size:1.1em;color:#fff}
+.results-header span{color:#6b6b80;font-size:0.85em}
+.creator-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.creator-card{background:#1a1b23;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;transition:all 0.3s;cursor:pointer}
+.creator-card:hover{border-color:rgba(0,206,209,0.3);transform:translateY(-2px)}
+.creator-top{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+.avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2em;font-weight:700;color:#fff;flex-shrink:0}
+.creator-info h3{font-size:1em;color:#fff;margin-bottom:2px}
+.creator-info .handle{color:#6b6b80;font-size:0.85em}
+.score-badge{margin-left:auto;font-size:1.4em;font-weight:800}
+.stats-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 12px;flex:1;min-width:80px;text-align:center}
+.stat .val{font-weight:700;font-size:0.95em;color:#fff}
+.stat .lbl{font-size:0.72em;color:#6b6b80;margin-top:2px}
+.match-bar{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-top:10px}
+.match-fill{height:100%;border-radius:3px;transition:width 1s}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tag{padding:3px 10px;border-radius:12px;font-size:0.75em;background:rgba(0,206,209,0.1);color:#00ced1;border:1px solid rgba(0,206,209,0.2)}
+.tag-pink{background:rgba(255,107,157,0.1);color:#ff6b9d;border-color:rgba(255,107,157,0.2)}
+.panel{display:none;background:#1a1b23;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:24px;margin-top:16px}
+.panel.show{display:block}
+.panel h3{color:#fff;margin-bottom:16px}
+.video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.video-thumb{background:#12131a;border-radius:8px;padding:40px 16px;text-align:center;border:1px solid rgba(255,255,255,0.06)}
+.video-thumb .icon{font-size:2em;margin-bottom:8px}
+.video-thumb .views{color:#6b6b80;font-size:0.8em}
+.ai-score{background:linear-gradient(135deg,rgba(0,206,209,0.05),rgba(255,107,157,0.05));border:1px solid rgba(0,206,209,0.15);border-radius:12px;padding:20px;margin-top:16px}
+.score-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.score-label{min-width:120px;font-size:0.88em;color:#8b8b9e}
+.score-track{flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden}
+.score-fill{height:100%;border-radius:4px}
+.score-val{min-width:40px;text-align:right;font-weight:700;font-size:0.88em}
+.loading{display:none;text-align:center;padding:40px;color:#6b6b80}
+.loading.show{display:block}
+.spinner{display:inline-block;width:30px;height:30px;border:3px solid rgba(255,255,255,0.1);border-top-color:#00ced1;border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>Affiliate Tool</h1>
+<span class="badge">Connected to TikTok API</span>
+</div>
+
+<div class="nav">
+<div class="nav-item active" onclick="showTab('discover')">Creator Discovery</div>
+<div class="nav-item" onclick="showTab('collab')">My Collaborations</div>
+<div class="nav-item" onclick="showTab('ai')">AI Scoring</div>
+</div>
+
+<div class="container">
+
+<div class="search-bar">
+<input type="text" placeholder="Search creators by keyword, category..." id="searchInput" value="fashion summer dress">
+<select>
+<option>All Categories</option>
+<option selected>Fashion & Beauty</option>
+<option>Lifestyle</option>
+<option>Tech</option>
+</select>
+<select>
+<option>All Regions</option>
+<option selected>United States</option>
+</select>
+<button class="btn btn-primary" onclick="searchCreators()">Search Creators</button>
+</div>
+
+<div class="loading" id="loading">
+<div class="spinner"></div>
+<p>Fetching creator data from TikTok Display API...</p>
+<p style="font-size:0.8em;margin-top:8px;color:#4a4a5e">Calling /v2/user/info/ and /v2/video/list/</p>
+</div>
+
+<div id="results" class="hidden">
+<div class="results-header">
+<h2>Creator Results</h2>
+<span>5 creators found · Sorted by AI Match Score</span>
+</div>
+
+<div class="creator-grid" id="creatorGrid"></div>
+</div>
+
+<div class="panel" id="detailPanel">
+<h3 id="detailTitle">Creator Profile</h3>
+<p id="detailBio" style="color:#8b8b9e;margin-bottom:16px;font-size:0.9em"></p>
+
+<h4 style="color:#fff;margin-bottom:12px;font-size:0.95em">Recent Videos (via video.list API)</h4>
+<div class="video-grid" id="videoGrid"></div>
+
+<div class="ai-score" id="aiScore">
+<h4 style="color:#fff;margin-bottom:14px">AI Match Analysis</h4>
+<div id="scoreBreakdown"></div>
+</div>
+</div>
+
+</div>
+
+<script>
+const creators = [
+{name:"Sunny Style",handle:"@sunny_style",avatar:"#10b981",initials:"SS",followers:"320K",views:"85K",gmv:"$62K",rate:"7.8%",conv:"5.5%",score:93,color:"#10b981",category:"Fashion & Lifestyle",bio:"Daily outfit inspiration and affordable fashion finds. Love sharing dress reviews and summer lookbooks!",tags:["Fashion","Dresses","Affordable"],videos:[{title:"Summer Dress Haul",views:"125K"},{title:"5 Outfit Ideas",views:"98K"},{title:"Maxi Dress Review",views:"110K"}],scores:{cat:23,eng:19,sales:23,fit:28}},
+{name:"Deal Hunter Jane",handle:"@deal_hunter_jane",avatar:"#f59e0b",initials:"DJ",followers:"180K",views:"55K",gmv:"$71K",rate:"9.1%",conv:"7.2%",score:89,color:"#10b981",category:"Fashion & Deals",bio:"Finding the best budget fashion on TikTok Shop! Hauls, reviews, and honest opinions.",tags:["Budget","Hauls","TikTok Shop"],videos:[{title:"$30 Dress Finds",views:"92K"},{title:"Shop Haul",views:"78K"},{title:"Best Deals",views:"65K"}],scores:{cat:22,eng:23,sales:25,fit:19}},
+{name:"Fashion Lisa",handle:"@fashion_lisa",avatar:"#818cf8",initials:"FL",followers:"850K",views:"120K",gmv:"$45K",rate:"5.2%",conv:"3.8%",score:82,color:"#00ced1",category:"Fashion & Beauty",bio:"Style enthusiast sharing outfit try-ons and seasonal lookbooks. Collab inquiries welcome!",tags:["Style","Lookbook","Try-on"],videos:[{title:"Spring Lookbook",views:"145K"},{title:"Try-on Haul",views:"132K"},{title:"Date Night Looks",views:"98K"}],scores:{cat:25,eng:13,sales:21,fit:23}},
+{name:"Bella Beauty",handle:"@bella_beauty",avatar:"#ff6b9d",initials:"BB",followers:"1.5M",views:"200K",gmv:"$38K",rate:"3.5%",conv:"2.9%",score:65,color:"#f59e0b",category:"Beauty & Skincare",bio:"Makeup tutorials and skincare routines. Helping you look your best!",tags:["Beauty","Skincare","Makeup"],videos:[{title:"Makeup Tutorial",views:"210K"},{title:"Skincare Routine",views:"185K"},{title:"Product Review",views:"160K"}],scores:{cat:18,eng:9,sales:19,fit:19}},
+{name:"Mike Reviews",handle:"@mike_reviews",avatar:"#6b6b80",initials:"MR",followers:"2.1M",views:"350K",gmv:"$28K",rate:"2.1%",conv:"1.2%",score:28,color:"#ff6b9d",category:"Tech & Gadgets",bio:"Tech unboxing and honest gadget reviews.",tags:["Tech","Unboxing","Gadgets"],videos:[{title:"Phone Unboxing",views:"380K"},{title:"Gadget Review",views:"290K"},{title:"Tech Comparison",views:"320K"}],scores:{cat:0,eng:5,sales:11,fit:12}}
+];
+
+function searchCreators(){
+document.getElementById('results').classList.add('hidden');
+document.getElementById('detailPanel').classList.remove('show');
+document.getElementById('loading').classList.add('show');
+setTimeout(()=>{
+document.getElementById('loading').classList.remove('show');
+renderCreators();
+document.getElementById('results').classList.remove('hidden');
+},2000);
+}
+
+function renderCreators(){
+const grid=document.getElementById('creatorGrid');
+grid.innerHTML='';
+creators.forEach((c,i)=>{
+const scoreColor=c.score>=80?'#10b981':c.score>=60?'#f59e0b':'#ff6b9d';
+grid.innerHTML+=`
+<div class="creator-card" onclick="showDetail(${i})">
+<div class="creator-top">
+<div class="avatar" style="background:${c.avatar}">${c.initials}</div>
+<div class="creator-info"><h3>${c.name}</h3><div class="handle">${c.handle} · ${c.category}</div></div>
+<div class="score-badge" style="color:${scoreColor}">${c.score}</div>
+</div>
+<div class="stats-row">
+<div class="stat"><div class="val">${c.followers}</div><div class="lbl">Followers</div></div>
+<div class="stat"><div class="val">${c.views}</div><div class="lbl">Avg Views</div></div>
+<div class="stat"><div class="val">${c.gmv}</div><div class="lbl">GMV 30d</div></div>
+<div class="stat"><div class="val">${c.rate}</div><div class="lbl">Engage</div></div>
+</div>
+<div class="match-bar"><div class="match-fill" style="width:${c.score}%;background:${scoreColor}"></div></div>
+<div class="tags">${c.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+</div>`;
+});
+}
+
+function showDetail(i){
+const c=creators[i];
+document.getElementById('detailTitle').textContent=c.name+' - Profile (via user.info API)';
+document.getElementById('detailBio').textContent=c.bio;
+const vg=document.getElementById('videoGrid');
+vg.innerHTML=c.videos.map(v=>`<div class="video-thumb"><div class="icon">▶</div><div style="color:#fff;font-size:0.85em">${v.title}</div><div class="views">${v.views} views</div></div>`).join('');
+const sb=document.getElementById('scoreBreakdown');
+const dims=[['Category Match',c.scores.cat,25,'#10b981'],['Engagement',c.scores.eng,25,'#00ced1'],['Sales Performance',c.scores.sales,25,'#f59e0b'],['Content Fit',c.scores.fit,25,'#818cf8']];
+sb.innerHTML=dims.map(d=>`<div class="score-row"><span class="score-label">${d[0]}</span><div class="score-track"><div class="score-fill" style="width:${(d[1]/d[2])*100}%;background:${d[3]}"></div></div><span class="score-val" style="color:${d[3]}">${d[1]}/${d[2]}</span></div>`).join('');
+document.getElementById('detailPanel').classList.add('show');
+document.getElementById('detailPanel').scrollIntoView({behavior:'smooth'});
+}
+
+function showTab(t){
+document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>
